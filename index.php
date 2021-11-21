@@ -311,12 +311,12 @@ if($_SESSION['music_user']){
         $sql = 'select *from music where id='.$id ;
 
         if(find($sql)){
-            $sql_1 = 'select *from comment where music_id='.$id.' order by create_time desc';
+            //$sql_1 = 'select *from comment where music_id='.$id.' order by create_time desc';
+            $sql_1 = 'select t2.id,t2.content,t2.create_time,t1.image from comment as t2 LEFT JOIN `user-center`.user as t1  on t2.user_id=t1.id where t2.music_id='.$id.' ORDER BY t2.create_time desc';
             $comment_list = select($sql_1);
-
             foreach($comment_list as $k=>$v){
-
-                echo '<div class="box" style="background-color:'.randomColor().';max-width:'.rand(70, 100).'%"><img src="'.$music_list['small_image'].'" class="touxiang" onerror="this.style.display='."'none'".'"><div class="content" style="color:'."#white".'">'.$v['content'].'</div></div>';
+		$image = $v['image']?:$music_list['small_image'];
+                echo '<div class="box" style="background-color:'.randomColor().';max-width:'.rand(70, 100).'%"><img src="'.$image.'" class="touxiang" onerror="this.style.display='."'none'".'"><div class="content" style="color:'."#white".'">'.$v['content'].'</div></div>';
             }
 
             $result = ['code' => 'success', 'info' => $comment_list ];
@@ -349,7 +349,11 @@ if($_SESSION['music_user']){
     </div>
 
     <!--暂停或播放-->
-    <div class="btnpic" item="0"></div>
+    <div item="0" class="btnpic">
+        <div class="switch-left"></div>
+        <div class="switch"></div>
+        <div class="switch-right"></div>
+    </div>
 
     <!-- 评论发布 -->
     <div class="comment">
@@ -700,8 +704,8 @@ if($_SESSION['music_user']){
     var startX = startY = endX = endY = 0;
     //显示歌词的元素
 
-    $(".btnpic").css("background-position","280px 0");
-    $(".btnpic").attr("item","1");
+    $(".switch").css("background-position","280px 0");
+    $(".switch").attr("item","1");
     function playPause()
     {
         if(my_audio.paused)
@@ -717,7 +721,8 @@ if($_SESSION['music_user']){
 
         }
     }
-    $(".btnpic").click(function(){
+    //暂停播放
+    $(".switch").click(function(){
         if($(this).attr("item")=="0"){
             $(this).css("background-position","280px 0");
             $(this).attr("item","1");
@@ -728,6 +733,36 @@ if($_SESSION['music_user']){
 
         playPause();
     });
+    //上一首
+    $(".switch-left").click(function(){
+        switchSong(0);
+    })
+    //下一首
+    $(".switch-right").click(function(){
+        switchSong(1);
+    })
+    //status 0 上一首 1 下一首
+    function switchSong(state) {
+        $.ajax({
+            url:'music.php',
+            data:'switch='+state+'&id='+<?php echo $id ?>,
+            type:'get',
+            dataType:'json',
+            async: false,
+            success:function(data){
+                if(data.type == 1){
+                    let curUrl = window.location.href;
+                    curUrl = (curUrl.split('?'))[0];
+                    location.href=curUrl+'?id='+data.data;
+                }else{
+                    layer.msg(data.message);
+                }
+            },
+            error:function () {
+                layer.msg('false');
+            }
+        })
+    }
     var lyric = parseLyric(songContent);
     //ÏÔÊ¾¸è´ÊµÄÔªËØ
     lyricContainer = document.getElementById('musicContent');
@@ -821,8 +856,8 @@ if($_SESSION['music_user']){
         if(Math.abs(endSongX-startSongX)<10){
             my_audio.play();   //开启音乐
             $(".img img").addClass("rainbow");
-            $('.btnpic').css("background-position","280px 0");
-            $('.btnpic').attr("item","1");
+            $('.switch').css("background-position","280px 0");
+            $('.switch').attr("item","1");
             return ;
         }
         //layer.msg("水平移动距离=    "+Math.abs(endSongX-startSongX));
@@ -841,8 +876,8 @@ if($_SESSION['music_user']){
         document.getElementById("now_time").innerHTML = timeFormat(currentTimeNew);
         my_audio.play();   //开启音乐
         $(".img img").addClass("rainbow");
-        $('.btnpic').css("background-position","280px 0");
-        $('.btnpic').attr("item","1");
+        $('.switch').css("background-position","280px 0");
+        $('.switch').attr("item","1");
         document.getElementById("all_time").innerHTML = timeFormat(my_audio.duration);
         //console.log("垂直移动距离=    "+(endSongY-startSongY));
 
@@ -882,8 +917,8 @@ if($_SESSION['music_user']){
             document.getElementById("now_time").innerHTML = timeFormat(currentTimeNew);
             my_audio.play();   //开启音乐
             $(".img img").addClass("rainbow");
-            $('.btnpic').css("background-position","280px 0");
-            $('.btnpic').attr("item","1");
+            $('.switch').css("background-position","280px 0");
+            $('.switch').attr("item","1");
             document.getElementById("all_time").innerHTML = timeFormat(my_audio.duration);
         }
 

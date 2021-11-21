@@ -37,16 +37,19 @@ p{
   100%{transform:rotate(360deg)}
 }
 .btnpic{
-    width: 40px;
-    height: 40px;
     position: absolute;
     top: 82%;
     left: 50%;
     right: 50%;
-    margin-left: -30px;
-    border-radius: 70px;
-    background: url(../img/uiBtn.jpg);
-    background-size: 300%;
+}
+.switch-left{
+    position: absolute;left: -58px;width: 40px;height: 40px;background: url(../img/qiege.png);background-size: 100%;
+}
+.switch{
+    position: absolute;left:-20px;width: 40px;height: 40px;background: url(../img/uiBtn.jpg);background-position: 280px 0px;background-size: 300%;
+}
+.switch-right{
+    position: absolute;left: 18px;width: 40px;height: 40px;transform: rotate(180deg);background: url(../img/qiege.png);background-size: 100%;
 }
 .btn{
     width: 15px;
