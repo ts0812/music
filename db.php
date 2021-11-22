@@ -5,7 +5,8 @@
 session_start();
 
 
-$db_host='localhost';
+//$db_host='localhost';
+$db_host='47.112.110.155';
 $db_user='root';
 $db_pass='tans0812';
 $db_name='music';
